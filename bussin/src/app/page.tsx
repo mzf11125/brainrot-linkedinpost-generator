@@ -155,15 +155,15 @@ ${hashtags.join(" ")} #GrindNeverStops #Blessed #ThankYouForComingToMyTedTalk`;
                 </div>
                 <div className="whitespace-pre-wrap">{post}</div>
                 <div className="flex gap-4 mt-4 text-gray-600">
-                  <button className="flex items-center gap-1">
+                  <button className="flex items-center gap-1" type="button">
                     <ThumbsUp className="w-4 h-4" />
                     Be Based
                   </button>
-                  <button className="flex items-center gap-1">
+                  <button className="flex items-center gap-1" type="button">
                     <MessageCircle className="w-4 h-4" />
                     Drop W
                   </button>
-                  <button className="flex items-center gap-1">
+                  <button className="flex items-center gap-1" type="button">
                     <Heart className="w-4 h-4" />
                     Show Rizz
                   </button>
