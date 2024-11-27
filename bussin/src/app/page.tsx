@@ -1,182 +1,50 @@
 "use client";
 
 import React, { useState } from "react";
+import OpenAI from "openai";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, MessageCircle, Heart, Brain } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const BrainrotLinkedIn = () => {
   const [post, setPost] = useState("");
   const [postLength, setPostLength] = useState(300);
   const [includeEmojis, setIncludeEmojis] = useState(true);
   const [formalityLevel, setFormalityLevel] = useState(50);
+  const [description, setDescription] = useState("");
 
-  const slangDict = {
-    achievements: [
-      "just hit a major rizz milestone",
-      "achieved peak sigma status",
-      "got absolutely cracked at my job",
-      "had the most bussin presentation",
-      "secured that massive W",
-      "experienced a glow-up in my career",
-      "demonstrated peak NPC grinding behavior",
-      "achieved maximum gyatt efficiency",
-      "popped off in the quarterly meeting",
-      "became the ultimate meme lord at work",
-      "finally got that high-key promotion",
-      "mastered the art of corporate cooking",
-      "reached maximum professional drip",
-      "unlocked new levels of based behavior",
-      "achieved main character status in meetings",
-    ],
+  // Configure OpenAI
+  const openai = new OpenAI({
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
 
-    businessBuzzwords: [
-      "synergistic skibidi mindset",
-      "sigma male grindset",
-      "rizz-based leadership",
-      "core NPC competencies",
-      "based decision-making framework",
-      "high-key disruption",
-      "no cap productivity",
-      "clutch performance metrics",
-      "absolutely cracked ROI",
-      "delulu-free strategy",
-      "goofy ahh innovation",
-      "real talk optimization",
-      "big brain initiatives",
-      "mogging competition analysis",
-      "professional gyatt management",
-    ],
+  const generatePost = async () => {
+    const prompt = `Generate a LinkedIn post based on the following description: ${description}. 
+    Include emojis: ${includeEmojis}. 
+    Formality level: ${formalityLevel}. 
+    Keep the post around ${postLength} characters long.`;
 
-    reflections: [
-      "Big mood: Sometimes you need to be the main character in your professional journey.",
-      "Vibe check: Your career is just a massive speedrun.",
-      "Remember: Keep that queen energy in every meeting.",
-      "No cap, the grind never stops.",
-      "Stay based and keep that sigma mindset.",
-      "Major key: Always maintain that bussin professional energy.",
-      "Real talk: Sometimes you gotta pop off in the corporate world.",
-      "Hot take: Being mid at your job is not the move.",
-      "Straight up living that corporate W lifestyle.",
-      "Erm what the sigma: Success is all about that mindset.",
-      "Chat is this real?: The achievements we're making.",
-      "Pookie, let me tell you about success.",
-      "Keeping that delulu-free mindset for success.",
-      "Little bro, the corporate world is just a big backroom.",
-      "Sometimes you gotta cook in those meetings fr fr.",
-    ],
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        max_tokens: postLength,
+      });
 
-    metrics: [
-      "💯 Rizz level: Maximized",
-      "📈 Sigma score: Through the roof",
-      "🔥 Clutch rating: Over 9000",
-      "🎯 NPC efficiency: Optimized",
-      "🚀 Skibidi momentum: Unstoppable",
-      "💪 Gyatt perspective: Activated",
-      "🧠 Big brain moves: Constant",
-      "⚡ Based decision rate: 100%",
-      "🌟 Professional drip: Infinite",
-      "🎮 Corporate speedrun: Perfect",
-      "🔄 Grindset multiplier: Maximum",
-      "💫 Main character energy: Peaked",
-      "🎭 Professional cooking: Master level",
-      "🌈 Vibe check status: Passed",
-      "🎯 Slay probability: 100%",
-    ],
-
-    hashtags: [
-      "#Skibidi",
-      "#SigmaMindset",
-      "#NPCgrindset",
-      "#RizzCEO",
-      "#CorporateGyatt",
-      "#ProfessionalW",
-      "#NoCapSuccess",
-      "#BasedLeadership",
-      "#CrackedProductivity",
-      "#BussinBusiness",
-      "#DelululFree",
-      "#CorporatePookie",
-      "#BigBrainMoves",
-      "#GlowUpSeason",
-      "#SlayAtWork",
-      "#CorporateCooking",
-      "#BusinessBackrooms",
-      "#ProfessionalMogging",
-    ],
-  };
-
-  const generatePost = () => {
-    const getRandomItems = (arr, count) => {
-      const shuffled = [...arr].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, count);
-    };
-
-    const achievement = getRandomItems(slangDict.achievements, 1)[0];
-    const buzzwords = getRandomItems(slangDict.businessBuzzwords, 2);
-    const reflection = getRandomItems(slangDict.reflections, 1)[0];
-    const metricCount = Math.floor(postLength / 100);
-    const metrics = getRandomItems(slangDict.metrics, metricCount);
-    const hashtagCount = Math.floor(postLength / 75);
-    const hashtags = getRandomItems(slangDict.hashtags, hashtagCount);
-
-    const emojis = includeEmojis ? "🚀 💫 " : "";
-    const formalPrefix =
-      formalityLevel > 75
-        ? "I am pleased to announce that "
-        : formalityLevel > 50
-        ? "Excited to share that "
-        : formalityLevel > 25
-        ? "YOOO! "
-        : "SHEEEESH! ";
-
-    const template = `${emojis}${formalPrefix}
-
-I just ${achievement} and ${
-      formalityLevel > 50
-        ? "I'm thrilled to share"
-        : "I'm literally shaking rn fr fr"
-    }.
-
-${
-  formalityLevel > 75
-    ? "Through strategic implementation"
-    : "While some might call this mid"
-}, this achievement combines ${buzzwords[0]} with ${buzzwords[1]}. ${reflection}
-
-${
-  formalityLevel > 50 ? "Key performance indicators" : "The real numbers fr fr"
-} ${formalityLevel > 75 ? ":" : "no cap:"} 
-${metrics.join("\n")}
-
-${formalityLevel > 50 ? "I'd like to acknowledge" : "Shoutout to"} my work ${
-      formalityLevel > 75 ? "colleagues" : "besties"
-    } for the constant support (real). Together we're not just hitting KPIs - we're absolutely demolishing them, ${
-      formalityLevel > 50 ? "indeed" : "no kizzy"
-    }.
-
-${
-  formalityLevel > 75
-    ? "Feeling grateful"
-    : "Feeling blessed and highly favored"
-}. 🙏
-
-${formalityLevel > 50 ? "Thoughts?" : "Thoughts? 🤔"}
-
-${hashtags.join(" ")} #GrindNeverStops #Blessed ${
-      formalityLevel < 50 ? "#ItsGivingCEO" : ""
-    }`;
-
-    // Trim post if it exceeds desired length
-    let finalPost = template;
-    if (template.length > postLength) {
-      finalPost = template.slice(0, postLength) + "...";
+      setPost(response.choices[0].message.content?.trim() || "");
+    } catch (error) {
+      console.error("Error generating post:", error);
     }
-
-    setPost(finalPost);
   };
 
   return (
@@ -190,6 +58,16 @@ ${hashtags.join(" ")} #GrindNeverStops #Blessed ${
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
+            <div>
+              <Label>Description</Label>
+              <Input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Enter the description of your post"
+                className="my-2"
+              />
+            </div>
+
             <div>
               <Label>Post Length (characters)</Label>
               <Slider
