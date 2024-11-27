@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import OpenAI from "openai";
+import { OpenAI } from "openai";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, MessageCircle, Heart, Brain } from "lucide-react";
@@ -9,6 +9,12 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import brainrotGlossary from "../../brainrot_glossary.json";
+
+const openai = new OpenAI({
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
 
 const BrainrotLinkedIn = () => {
   const [post, setPost] = useState("");
@@ -17,31 +23,27 @@ const BrainrotLinkedIn = () => {
   const [formalityLevel, setFormalityLevel] = useState(50);
   const [description, setDescription] = useState("");
 
-  // Configure OpenAI
-  const openai = new OpenAI({
-    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true,
-  });
-
   const generatePost = async () => {
+    const glossaryString = JSON.stringify(brainrotGlossary, null, 2); // Format the glossary JSON as a string
+
     const prompt = `Generate a LinkedIn post based on the following description: ${description}. 
     Include emojis: ${includeEmojis}. 
     Formality level: ${formalityLevel}. 
-    Keep the post around ${postLength} characters long.`;
+    Keep the post around ${postLength} characters long.
+
+    Here is a glossary of terms for the "Brainrot" style:
+    ${glossaryString}
+    
+    Use the terms and phrases from the glossary to generate the post in the required style.`;
 
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
+      const response = await openai.completions.create({
+        model: "gpt-3.5-turbo",
+        prompt,
         max_tokens: postLength,
       });
 
-      setPost(response.choices[0].message.content?.trim() || "");
+      setPost(response.choices[0].text.trim());
     } catch (error) {
       console.error("Error generating post:", error);
     }
